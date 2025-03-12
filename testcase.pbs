@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -l select=2
+#PBS -A radix-io
+#PBS -l walltime=00:5:00
+#PBS -N cxi-testcase
+#PBS -k doe
+#PBS -j oe
+#PBS -l filesystems=flare
+#PBS -V
+
+cd $PBS_O_WORKDIR
+
+export FI_LOG_PROV=cxi
+#export MPIR_CVAR_CH4_OFI_ENABLE_INJECT=0
+FI_CXI_DISABLE_NON_INJECT_MSG_IDC=0
+mpiexec -envall -l -np 2 -ppn 1 ./cxi-testcase
