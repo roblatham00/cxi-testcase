@@ -29,9 +29,10 @@ int main(int argc, char **argv)
     const int tag=999;
 
     // this passes:
+    memset(recv_buf, 0, sizeof(recv_buf));
     std::string  hi = "Hello string type";
     if (rank == 0) {
-	CHECK(MPI_Send(hi.c_str(), hi.size(), MPI_CHAR, 1, tag, MPI_COMM_WORLD));
+	CHECK(MPI_Send(hi.c_str(), hi.size()+1, MPI_CHAR, 1, tag, MPI_COMM_WORLD));
 	fprintf(stderr, "succesfully sent from string type\n");
     } else if (rank == 1) {
 	CHECK(MPI_Recv(recv_buf, 1024, MPI_CHAR, 0, tag, MPI_COMM_WORLD, &status));
@@ -39,9 +40,10 @@ int main(int argc, char **argv)
     }
 
     // fails with a cxi error
+    memset(recv_buf, 0, sizeof(recv_buf));
     const char *msg = "Hello stack";
     if (rank == 0) {
-	CHECK(MPI_Send(msg, strlen(msg), MPI_CHAR, 1, tag, MPI_COMM_WORLD));
+	CHECK(MPI_Send(msg, strlen(msg)+1, MPI_CHAR, 1, tag, MPI_COMM_WORLD));
 	fprintf(stderr, "successfully sent from stack\n");
     } else if (rank == 1) {
 	CHECK(MPI_Recv(recv_buf, 1024, MPI_CHAR, 0, tag, MPI_COMM_WORLD, &status));
@@ -49,6 +51,7 @@ int main(int argc, char **argv)
     }
 
     // sending a string literal will also fail with a cxi error
+    memset(recv_buf, 0, sizeof(recv_buf));
     if (rank == 0) {
 	CHECK(MPI_Send("hello", strlen("hello")+1, MPI_CHAR, 1, tag, MPI_COMM_WORLD));
 	fprintf(stderr, "successfully sent string literal\n");
